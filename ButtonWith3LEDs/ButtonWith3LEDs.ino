@@ -12,6 +12,8 @@ const int ledPin3 = 5;
 const int buttonPin = 4;
 int controller = 0;
 byte readValue;
+boolean oldPress = false;
+boolean newPress = false;
 
 // Setup
 void setup()
@@ -23,10 +25,21 @@ void setup()
   pinMode (buttonPin, INPUT); // This is an input
 }
 
+boolean reading (boolean last)
+{
+  boolean current = digitalRead(buttonPin);
+  delay(5);
+  if (current != last)
+  {
+    current = digitalRead(buttonPin);
+  }
+  return current;
+}
+
 void loop()
 {
-  readValue = digitalRead(buttonPin);
-  if (readValue == 1)
+  newPress = reading(oldPress);
+  if (newPress == HIGH && oldPress == LOW)
   {
     //controller is a variable to see how many lights should be on
     controller ++;
@@ -57,6 +70,6 @@ void loop()
       digitalWrite(ledPin3, LOW);
       break;
   }
+  oldPress = newPress;
   Serial.println(controller); //For testing purposes
-  delay(200); //A delay so too many button inputs aren't read (kind of)
 }
