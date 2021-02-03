@@ -29,34 +29,33 @@ void loop()
   if (readValue == 1)
   {
     //controller is a variable to see how many lights should be on
-    controller = controller + 1;
-    if (controller >= 4)
-    {
-      //Because there aren't more than 3 lights on the breadboard for this project
-      controller = 0;
-    }
+    controller ++;
   }
 
-  //turns on a light if controller is equal to or greater than a certain number
-  if (controller >= 1)
+  //turns on a light depending on the controller variable
+  switch (controller)
   {
-    digitalWrite(ledPin1, HIGH);
-  }
-  if (controller >= 2)
-  {
-    digitalWrite(ledPin2, HIGH); 
-  }
-  if (controller >= 3)
-  {
-    digitalWrite(ledPin3, HIGH); 
-  }
-
-  //turns off the lights if controller is 0
-  if (controller == 0)
-  {
-    digitalWrite(ledPin1, LOW);
-    digitalWrite(ledPin2, LOW);
-    digitalWrite(ledPin3, LOW); 
+    case 1:
+      digitalWrite(ledPin1, HIGH);
+      digitalWrite(ledPin2, LOW);
+      digitalWrite(ledPin3, LOW);
+      break;
+    case 2:
+      digitalWrite(ledPin1, LOW);
+      digitalWrite(ledPin2, HIGH);
+      digitalWrite(ledPin3, LOW);
+      break;
+    case 3:
+      digitalWrite(ledPin1, LOW);
+      digitalWrite(ledPin2, LOW);
+      digitalWrite(ledPin3, HIGH);
+      break;
+     default:
+      controller = 0; //Because there aren't more than 3 lights on the breadboard for this project
+      digitalWrite(ledPin1, LOW);
+      digitalWrite(ledPin2, LOW);
+      digitalWrite(ledPin3, LOW);
+      break;
   }
   Serial.println(controller); //For testing purposes
   delay(200); //A delay so too many button inputs aren't read (kind of)
