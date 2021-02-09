@@ -1,17 +1,10 @@
 /*
 * Aarian Dhanani
-* 2/5/2021
+* 2/9/2021
+* Photoresistor and Button
 * 
-* Potentiometer
-* 
-* analogRead
-* 
-* Photoresistor
-* 
-* Map function
 */
 
-const int potentiometerPin = A0;
 const int photoPin = A1;
 const int buttonPin = 10;
 const int ledPin1 = 9;
@@ -25,7 +18,6 @@ boolean newPress = false;
 void setup()
 { 
   Serial.begin(9600);
-  pinMode(potentiometerPin, INPUT);
   pinMode(photoPin, INPUT);
   pinMode(ledPin1, OUTPUT); // This is an output
   pinMode(ledPin2, OUTPUT); // This is an output
@@ -45,18 +37,10 @@ boolean reading (boolean last)
 
 void loop()
 {
-
   newPress = reading(oldPress);
-  if (newPress == HIGH && oldPress == LOW)
-  {
-    //controller is a variable to see how many lights should be on
-    controller ++;
-  }
-
-//  readValue = analogRead(potentiometerPin);
-//  readValue = map(readValue, 0, 25, 0, 255);
 
   readValue = analogRead(photoPin);
+  
   Serial.println(readValue); //For testing purposes
   analogWrite(ledPin1, readValue);
   analogWrite(ledPin2, readValue);
