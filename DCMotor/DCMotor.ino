@@ -10,6 +10,8 @@ const int potentiometerPin = A0;
 const int direction1 = 2;
 const int direction2 = 3;
 const int motor = 9;
+const int redLight = 4;
+const int greenLight = 5;
 
 boolean onOffValue;
 boolean onOffOld;
@@ -27,6 +29,8 @@ void setup() {
   pinMode(direction1, OUTPUT);
   pinMode(direction2, OUTPUT);
   pinMode(motor, OUTPUT);
+  pinMode(redLight, OUTPUT);
+  pinMode(greenLight, OUTPUT);
 
 }
 
@@ -80,10 +84,14 @@ void loop() {
 
       value = map(value, 0, 1023, 0, 255);
       analogWrite(motor, value);
+      digitalWrite(redLight, LOW);
+      digitalWrite(greenLight, HIGH);
     }
     else
     {
       analogWrite(motor, LOW);
+      digitalWrite(redLight, HIGH);
+      digitalWrite(greenLight, LOW);
     }
 
     onOffOld = onOffValue;
