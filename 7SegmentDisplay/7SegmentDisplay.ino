@@ -267,7 +267,7 @@ void loop() {
     }
     down = !down;
   }
-  Serial.println(controller);
+  Serial.println(controller); //For testing purposes
   upOld = upValue;
   downOld = downValue;
 }
