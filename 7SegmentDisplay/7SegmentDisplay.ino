@@ -36,6 +36,15 @@ void setup() {
   pinMode(g, OUTPUT);
   pinMode(buttonPin, INPUT);
   pinMode(buttonPin2, INPUT);
+  Serial.begin(9600);
+
+  digitalWrite(b, HIGH);
+  digitalWrite(c, HIGH);
+  digitalWrite(g, LOW);
+  digitalWrite(f, HIGH);
+  digitalWrite(e, HIGH);
+  digitalWrite(d, HIGH);
+  digitalWrite(a, HIGH);
 }
 
 boolean reading (boolean last, int button)
@@ -218,9 +227,10 @@ void loop() {
     {
       controller = 0;
     }
-    if (controller == -1)
+
+    if (controller < 0)
     {
-      controller == 9;
+      controller = 9;
     }
     switch(controller)
     {
@@ -257,6 +267,7 @@ void loop() {
     }
     down = !down;
   }
+  Serial.println(controller);
   upOld = upValue;
   downOld = downValue;
 }
