@@ -19,7 +19,7 @@ void setup() {
   myDisplay.begin();
 
   // Set the intensity (brightness) of the display (0-15)
-  myDisplay.setIntensity(0);
+  myDisplay.setIntensity(15);
 
   // Clear the display
   myDisplay.displayClear();
