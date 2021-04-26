@@ -48,11 +48,11 @@ void loop() {
     analogWrite(BPin, yValue);
   }
 
-//  Serial.print(x);
-//  Serial.print(" ");
-//  Serial.print(y);
-//  Serial.print(" ");
-//  Serial.print(button);
-//  Serial.println();
+  Serial.print(x);
+  Serial.print(" ");
+  Serial.print(y);
+  Serial.print(" ");
+  Serial.print(button);
+  Serial.println();
 
 }
