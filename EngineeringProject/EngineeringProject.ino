@@ -9,6 +9,11 @@
 MD_MAX72XX mx = MD_MAX72XX(HARDWARE_TYPE, CS_PIN, MAX_DEVICES);                      // SPI hardware interface
 //MD_MAX72XX mx = MD_MAX72XX(HARDWARE_TYPE, DATA_PIN, CLK_PIN, CS_PIN, MAX_DEVICES); // Arbitrary pins
 
+//For Shift Register
+const int RPin = 6;
+const int GPin = 9;
+const int BPin = 10;
+
 //For player 1
 const int VRXPin = A0;
 const int VRYPin = A1;
@@ -22,13 +27,30 @@ int yP2 = 3;
 int yP2Joystick;
 
 //For buzzer
-const int buzzerPin = 10;
+const int buzzerPin = 12;
 
 //For ball
 int x = 15;
 int y = 3;
 bool up = true;
 bool right = true;
+
+//For P1 button
+const int P1Button = 2;
+boolean P1OldPress = false;
+boolean P1NewPress = false;
+
+//For P2 button
+const int P2Button = 7;
+boolean P2OldPress = false;
+boolean P2NewPress = false;
+
+//Set up
+boolean P1Ready = false;
+boolean P2Ready = false;
+int P1Score = 0;
+int P2Score = 0;
+boolean gameOn = false;
 
 void setup() {
   Serial.begin(9600);
@@ -37,8 +59,67 @@ void setup() {
   pinMode(VRX2Pin, INPUT);
   pinMode(VRY2Pin, INPUT);
   pinMode(buzzerPin, OUTPUT);
+  pinMode(P1Button, INPUT);
+  pinMode(P2Button, INPUT);
+  pinMode(RPin, OUTPUT); // This is an output
+  pinMode(BPin, OUTPUT); // This is an output
+  pinMode(GPin, OUTPUT); // This is an output
+  analogWrite(RPin, 200);
+  analogWrite(GPin, 200);
+  analogWrite(BPin, 200);
   mx.begin();
+}
 
+void scorePrint()
+{
+  if (P1Score == 1)
+  {
+    mx.setPoint(1, 4, true);
+    mx.setPoint(2, 4, true);
+    mx.setPoint(3, 4, true);
+    mx.setPoint(4, 4, true);
+    mx.setPoint(5, 4, true);
+    mx.setPoint(6, 4, true);
+  }
+  else if (P1Score == 2)
+  {
+    mx.setPoint(1, 4, true);
+    mx.setPoint(2, 4, true);
+    mx.setPoint(3, 4, true);
+    mx.setPoint(4, 4, true);
+    mx.setPoint(5, 4, true);
+    mx.setPoint(6, 4, true);
+    mx.setPoint(1, 7, true);
+    mx.setPoint(2, 7, true);
+    mx.setPoint(3, 7, true);
+    mx.setPoint(4, 7, true);
+    mx.setPoint(5, 7, true);
+    mx.setPoint(6, 7, true);
+  }
+  if (P2Score == 1)
+  {
+    mx.setPoint(1, 27, true);
+    mx.setPoint(2, 27, true);
+    mx.setPoint(3, 27, true);
+    mx.setPoint(4, 27, true);
+    mx.setPoint(5, 27, true);
+    mx.setPoint(6, 27, true);
+  }
+  else if (P2Score == 2)
+  {
+    mx.setPoint(1, 27, true);
+    mx.setPoint(2, 27, true);
+    mx.setPoint(3, 27, true);
+    mx.setPoint(4, 27, true);
+    mx.setPoint(5, 27, true);
+    mx.setPoint(6, 27, true);
+    mx.setPoint(1, 23, true);
+    mx.setPoint(2, 23, true);
+    mx.setPoint(3, 23, true);
+    mx.setPoint(4, 23, true);
+    mx.setPoint(5, 23, true);
+    mx.setPoint(6, 23, true);
+  }
 }
 
 void P1()
@@ -53,6 +134,7 @@ void P1()
 void P2()
 {
   yP2Joystick = analogRead(VRY2Pin);
+  //Serial.println(yP2Joystick);
   yP2 = map(yP2Joystick, 1023, 0, 6, -1);
 //  Serial.println(yP2);
   mx.setPoint(yP2, 31, true);
@@ -112,48 +194,124 @@ void ball()
   mx.setPoint(y, x, true);
 }
 
-void loop() {
-  noTone(buzzerPin);
-  mx.clear();
-  P1();
-  P2();
-  ball();
+boolean openReading (boolean last)
+{
+  boolean current = digitalRead(P1Button);
+  delay(5);
+  if (current != last)
+  {
+    current = digitalRead(P1Button);
+  }
+  return current;
+}
 
-  //P1 loss check
-  if (x == 1 and right == false)
+boolean openReading2 (boolean last2)
+{
+  boolean current = digitalRead(P2Button);
+  delay(5);
+  if (current != last2)
   {
-    if (y != yP1 and y != (yP1 + 1))
-    {
-      Serial.println("False");
-      tone(buzzerPin, 500);
-      delay(1000);
-      noTone(buzzerPin);
-      x = 15;
-      y = 3;
-    }
-    else
-    {
-      Serial.println("True");
-      right = true;
-    }
+    current = digitalRead(P2Button);
   }
-  //P2 loss check
-  if (x == 30 and right == true)
+  return current;
+}
+
+void P1ButtonFunction()
+{
+  Serial.println("Open button");
+}
+
+void loop() {
+  mx.clear();
+  while (gameOn == true) {
+    noTone(buzzerPin);
+    mx.clear();
+    P1();
+    P2();
+    ball();
+    //P1 loss check
+    if (x == 1 and right == false)
+    {
+      if (y != yP1 and y != (yP1 + 1))
+      {
+        Serial.println("False");
+        P2Score = P2Score + 1;
+        scorePrint();
+        tone(buzzerPin, 500);
+        delay(1000);
+        noTone(buzzerPin);
+        x = 15;
+        y = 3;
+      }
+      else
+      {
+        Serial.println("True");
+        right = true;
+      }
+    }
+    //P2 loss check
+    if (x == 30 and right == true)
+    {
+      if (y != yP2 and y != (yP2 + 1))
+      {
+        Serial.println("False");
+        P1Score = P1Score + 1;
+        scorePrint();
+        tone(buzzerPin, 500);
+        delay(1000);
+        noTone(buzzerPin);
+        x = 15;
+        y = 3;
+      }
+      else
+      {
+        Serial.println("True");
+        right = false;
+      }
+    }
+
+    if (P2Score == 2 or P1Score == 2)
+    {
+      P1Score = 0;
+      P2Score = 0;
+      gameOn = false;
+      P1Ready = false;
+      P2Ready = false;
+    }
+    delay(200);
+  }
+  P1NewPress = openReading(P1OldPress);
+  if (P1NewPress == HIGH && P1OldPress == LOW)
   {
-    if (y != yP2 and y != (yP2 + 1))
-    {
-      Serial.println("False");
-      tone(buzzerPin, 500);
-      delay(1000);
-      noTone(buzzerPin);
-      x = 15;
-      y = 3;
-    }
-    else
-    {
-      Serial.println("True");
-      right = false;
-    }
+    P1Ready = true;
+    //P1ButtonFunction();
   }
-  delay(200);
+  P2NewPress = openReading2(P2OldPress);
+  if (P2NewPress == HIGH && P2OldPress == LOW)
+  {
+    P2Ready = true;
+    //P1ButtonFunction();
+  }
+  //Serial.println(gameOn);
+  if (P1Ready == true and P2Ready == true)
+  {
+    gameOn = true;
+  }
+  if (P1Ready == true)
+  {
+    mx.setPoint(3, 3, true);
+    mx.setPoint(4, 3, true);
+    mx.setPoint(3, 4, true);
+    mx.setPoint(4, 4, true);
+  }
+  if (P2Ready == true)
+  {
+    mx.setPoint(3, 27, true);
+    mx.setPoint(4, 27, true);
+    mx.setPoint(3, 28, true);
+    mx.setPoint(4, 28, true);
+  }
+  delay(100);
+  P1OldPress = P1NewPress;
+  P2OldPress = P2NewPress;
 }
