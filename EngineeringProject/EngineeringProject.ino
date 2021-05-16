@@ -52,6 +52,7 @@ int P1Score = 0;
 int P2Score = 0;
 boolean gameOn = false;
 
+//Set up
 void setup() {
   Serial.begin(9600);
   pinMode(VRXPin, INPUT);
@@ -70,6 +71,7 @@ void setup() {
   mx.begin();
 }
 
+//to print the score
 void scorePrint()
 {
   if (P1Score == 1)
@@ -122,6 +124,7 @@ void scorePrint()
   }
 }
 
+//Player 1 paddle
 void P1()
 {
   yP1Joystick = analogRead(VRYPin);
@@ -131,6 +134,7 @@ void P1()
   mx.setPoint(yP1 + 1, 0, true);
 }
 
+//Player 2 paddle
 void P2()
 {
   yP2Joystick = analogRead(VRY2Pin);
@@ -141,6 +145,7 @@ void P2()
   mx.setPoint(yP2 + 1, 31, true);
 }
 
+//Not used. This would be for an endless version of the game (player 1)
 void AI()
 {
   yP2 = y;
@@ -152,6 +157,7 @@ void AI()
   mx.setPoint(yP2 + 1, 31, true);
 }
 
+//Move the ball
 void ball()
 {  
   if (y > 6)
@@ -194,6 +200,7 @@ void ball()
   mx.setPoint(y, x, true);
 }
 
+//For player 1 button
 boolean openReading (boolean last)
 {
   boolean current = digitalRead(P1Button);
@@ -205,6 +212,7 @@ boolean openReading (boolean last)
   return current;
 }
 
+//For player 2 button
 boolean openReading2 (boolean last2)
 {
   boolean current = digitalRead(P2Button);
@@ -216,13 +224,16 @@ boolean openReading2 (boolean last2)
   return current;
 }
 
+//For testing
 void P1ButtonFunction()
 {
   Serial.println("Open button");
 }
 
+//Main loop
 void loop() {
-  mx.clear();
+  mx.clear(); //Clear LED matrix
+  //Run while the game is on
   while (gameOn == true) {
     noTone(buzzerPin);
     mx.clear();
@@ -270,6 +281,7 @@ void loop() {
       }
     }
 
+    //Check to see if a player has won the game yet
     if (P2Score == 2 or P1Score == 2)
     {
       P1Score = 0;
@@ -280,6 +292,8 @@ void loop() {
     }
     delay(200);
   }
+
+  //For buttons
   P1NewPress = openReading(P1OldPress);
   if (P1NewPress == HIGH && P1OldPress == LOW)
   {
@@ -293,10 +307,14 @@ void loop() {
     //P1ButtonFunction();
   }
   //Serial.println(gameOn);
+
+  //Start the game
   if (P1Ready == true and P2Ready == true)
   {
     gameOn = true;
   }
+
+  //Draw if the player(s) are ready
   if (P1Ready == true)
   {
     mx.setPoint(3, 3, true);
